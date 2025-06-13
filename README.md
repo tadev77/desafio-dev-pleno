@@ -2,7 +2,7 @@
 Este é um desafio técnico para a vaga de Desenvolvedor Pleno. Seu objetivo é desenvolver uma aplicação movimentações financeiras, com autenticação de usuário, associação de categorias e persistência em banco de dados.
 
 ## 🧰 Requisitos Técnicos
-- Usar a estrutura inicial deste repositório (API utilizando NestJS e UI utilizando NextJS).
+- Usar a estrutura inicial deste repositório (API utilizando NestJS e UI utilizando NextJS+Tailwind).
 - Login de usuário.
 - Cadastro de Usuários.
 - Cadastro de Movimentações.
