@@ -1,4 +1,4 @@
-# 💼 Desafio: Cadastro de Movimentações Financeiras
+# 💼 Desafio Técnico Dev Fullstack Pleno
 Este é um desafio técnico para a vaga de Desenvolvedor Pleno. Seu objetivo é desenvolver uma aplicação movimentações financeiras, com autenticação de usuário, associação de categorias e persistência em banco de dados.
 
 ## 🧰 Requisitos Técnicos
