@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -10,12 +11,20 @@ async function bootstrap() {
     new FastifyAdapter()
   );
   
+  // Configuração de validação global
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
+
   const swaggerConfig = new DocumentBuilder()
-  .setTitle('Desafio Técnico - Backend')
-  .setDescription('')
-  .setVersion('1.0')
-  .addTag('')
-  .build();
+    .setTitle('Desafio Técnico - Backend')
+    .setDescription('API para sistema de movimentações financeiras')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addTag('Autenticação', 'Endpoints para login e registro de usuários')
+    .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('swagger', app, swaggerDocument);
 
