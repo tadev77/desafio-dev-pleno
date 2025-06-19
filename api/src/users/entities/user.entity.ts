@@ -1,13 +1,13 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class User {
@@ -27,6 +27,14 @@ export class User {
   @Column({ length: 255 })
   @Exclude()
   password: string;
+
+  @ApiProperty({ description: 'Categorias do usuário' })
+  @OneToMany('Category', 'user')
+  categories: any[];
+
+  @ApiProperty({ description: 'Transações do usuário' })
+  @OneToMany('Transaction', 'user')
+  transactions: any[];
 
   @ApiProperty({ description: 'Data de criação do usuário' })
   @CreateDateColumn()

@@ -4,8 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { CategoriesModule } from './categories/categories.module';
 import { getDatabaseConfig } from './config/database.config';
+import { TransactionsModule } from './transactions/transactions.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { getDatabaseConfig } from './config/database.config';
     }),
     AuthModule,
     UsersModule,
+    CategoriesModule,
+    TransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
