@@ -28,6 +28,7 @@ CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     description VARCHAR(255) NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
+    type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
     date DATE NOT NULL,
     notes TEXT,
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -42,6 +43,7 @@ CREATE INDEX idx_categories_type ON categories(type);
 CREATE INDEX idx_transactions_user_id ON transactions(user_id);
 CREATE INDEX idx_transactions_category_id ON transactions(category_id);
 CREATE INDEX idx_transactions_date ON transactions(date);
+CREATE INDEX idx_transactions_type ON transactions(type);
 CREATE INDEX idx_transactions_user_date ON transactions(user_id, date);
 
 -- Comentários das tabelas
@@ -65,6 +67,7 @@ COMMENT ON COLUMN categories.user_id IS 'ID do usuário proprietário';
 COMMENT ON COLUMN transactions.id IS 'ID único da transação';
 COMMENT ON COLUMN transactions.description IS 'Descrição da transação';
 COMMENT ON COLUMN transactions.amount IS 'Valor da transação';
+COMMENT ON COLUMN transactions.type IS 'Tipo da transação (income/expense)';
 COMMENT ON COLUMN transactions.date IS 'Data da transação';
 COMMENT ON COLUMN transactions.notes IS 'Observações da transação';
 COMMENT ON COLUMN transactions.user_id IS 'ID do usuário proprietário';

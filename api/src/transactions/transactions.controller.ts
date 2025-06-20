@@ -42,6 +42,12 @@ export class TransactionsController {
   @Get()
   @ApiOperation({ summary: 'Listar todas as transações do usuário' })
   @ApiQuery({ 
+    name: 'type', 
+    required: false, 
+    enum: ['income', 'expense'],
+    description: 'Filtrar por tipo de transação'
+  })
+  @ApiQuery({ 
     name: 'categoryId', 
     required: false,
     description: 'Filtrar por ID da categoria'
@@ -67,66 +73,6 @@ export class TransactionsController {
     @Query() query: TransactionQueryDto
   ) {
     return this.transactionsService.findAll(req.user, query);
-  }
-
-  @Get('income')
-  @ApiOperation({ summary: 'Listar transações de receita (income)' })
-  @ApiQuery({ 
-    name: 'categoryId', 
-    required: false,
-    description: 'Filtrar por ID da categoria'
-  })
-  @ApiQuery({ 
-    name: 'startDate', 
-    required: false,
-    description: 'Data inicial (YYYY-MM-DD)'
-  })
-  @ApiQuery({ 
-    name: 'endDate', 
-    required: false,
-    description: 'Data final (YYYY-MM-DD)'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Lista de transações de receita',
-    type: [Transaction] 
-  })
-  @ApiResponse({ status: 401, description: 'Não autorizado' })
-  findIncome(
-    @Request() req: { user: User },
-    @Query() query: TransactionQueryDto
-  ) {
-    return this.transactionsService.findByType('income', req.user, query);
-  }
-
-  @Get('expense')
-  @ApiOperation({ summary: 'Listar transações de despesa (expense)' })
-  @ApiQuery({ 
-    name: 'categoryId', 
-    required: false,
-    description: 'Filtrar por ID da categoria'
-  })
-  @ApiQuery({ 
-    name: 'startDate', 
-    required: false,
-    description: 'Data inicial (YYYY-MM-DD)'
-  })
-  @ApiQuery({ 
-    name: 'endDate', 
-    required: false,
-    description: 'Data final (YYYY-MM-DD)'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Lista de transações de despesa',
-    type: [Transaction] 
-  })
-  @ApiResponse({ status: 401, description: 'Não autorizado' })
-  findExpense(
-    @Request() req: { user: User },
-    @Query() query: TransactionQueryDto
-  ) {
-    return this.transactionsService.findByType('expense', req.user, query);
   }
 
   @Get('balance')
