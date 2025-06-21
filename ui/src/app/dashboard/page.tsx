@@ -5,10 +5,10 @@ import CategoryForm from '@/components/CategoryForm';
 import TransactionForm from '@/components/TransactionForm';
 import { authApi, categoriesApi, transactionsApi } from '@/lib/api';
 import { User } from '@/types/auth';
-import { Category } from '@/types/category';
-import { Balance, Transaction } from '@/types/transaction';
+import { Category, CreateCategoryData, UpdateCategoryData } from '@/types/category';
+import { Balance, Transaction, CreateTransactionData, UpdateTransactionData } from '@/types/transaction';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 type TabType = 'overview' | 'transactions' | 'categories';
 
@@ -27,17 +27,7 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.push('/auth/login');
-      return;
-    }
-
-    fetchData();
-  }, [router]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setError(null);
       const [userData, categoriesData, transactionsData, balanceData] = await Promise.all([
@@ -51,10 +41,12 @@ export default function DashboardPage() {
       setCategories(categoriesData);
       setTransactions(transactionsData);
       setBalance(balanceData);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao carregar dados:', error);
       setError('Erro ao carregar dados. Tente novamente.');
-      if (error.response?.status === 401) {
+      if (error && typeof error === 'object' && 'response' in error && 
+          error.response && typeof error.response === 'object' && 
+          'status' in error.response && error.response.status === 401) {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('user');
         router.push('/auth/login');
@@ -62,7 +54,17 @@ export default function DashboardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      router.push('/auth/login');
+      return;
+    }
+
+    fetchData();
+  }, [router, fetchData]);
 
   const handleLogout = () => {
     localStorage.removeItem('accessToken');
@@ -70,19 +72,19 @@ export default function DashboardPage() {
     router.push('/auth/login');
   };
 
-  const handleCategorySubmit = async (data: any) => {
+  const handleCategorySubmit = async (data: CreateCategoryData | UpdateCategoryData) => {
     setIsSubmitting(true);
     setError(null);
     try {
       if (editingCategory) {
-        await categoriesApi.update(editingCategory.id, data);
+        await categoriesApi.update(editingCategory.id, data as UpdateCategoryData);
       } else {
-        await categoriesApi.create(data);
+        await categoriesApi.create(data as CreateCategoryData);
       }
       await fetchData();
       setShowCategoryForm(false);
       setEditingCategory(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar categoria:', error);
       setError('Erro ao salvar categoria. Tente novamente.');
     } finally {
@@ -90,19 +92,19 @@ export default function DashboardPage() {
     }
   };
 
-  const handleTransactionSubmit = async (data: any) => {
+  const handleTransactionSubmit = async (data: CreateTransactionData | UpdateTransactionData) => {
     setIsSubmitting(true);
     setError(null);
     try {
       if (editingTransaction) {
-        await transactionsApi.update(editingTransaction.id, data);
+        await transactionsApi.update(editingTransaction.id, data as UpdateTransactionData);
       } else {
-        await transactionsApi.create(data);
+        await transactionsApi.create(data as CreateTransactionData);
       }
       await fetchData();
       setShowTransactionForm(false);
       setEditingTransaction(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar transação:', error);
       setError('Erro ao salvar transação. Tente novamente.');
     } finally {
@@ -116,7 +118,7 @@ export default function DashboardPage() {
         setError(null);
         await categoriesApi.delete(id);
         await fetchData();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Erro ao excluir categoria:', error);
         setError('Erro ao excluir categoria. Tente novamente.');
       }
@@ -129,7 +131,7 @@ export default function DashboardPage() {
         setError(null);
         await transactionsApi.delete(id);
         await fetchData();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Erro ao excluir transação:', error);
         setError('Erro ao excluir transação. Tente novamente.');
       }

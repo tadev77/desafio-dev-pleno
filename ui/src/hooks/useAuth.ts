@@ -1,6 +1,17 @@
 import { useState, useCallback } from 'react';
 import { authApi } from '@/lib/api';
-import { LoginData, RegisterData, User } from '@/types/auth';
+import { LoginData, RegisterData } from '@/types/auth';
+
+interface ApiError {
+  code?: string;
+  message?: string;
+  response?: {
+    status?: number;
+    data?: {
+      message?: string;
+    };
+  };
+}
 
 export const useAuth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,19 +26,20 @@ export const useAuth = () => {
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as ApiError;
       let errorMessage = 'Erro desconhecido ao fazer login. Tente novamente.';
       
-      if (err.code === 'ECONNREFUSED' || err.message?.includes('Network Error')) {
+      if (error.code === 'ECONNREFUSED' || error.message?.includes('Network Error')) {
         errorMessage = 'Não foi possível conectar ao servidor. Verifique se a API está rodando.';
-      } else if (err.response?.status === 401) {
-        errorMessage = err.response?.data?.message || 'Email ou senha incorretos.';
-      } else if (err.response?.status === 500) {
+      } else if (error.response?.status === 401) {
+        errorMessage = error.response?.data?.message || 'Email ou senha incorretos.';
+      } else if (error.response?.status === 500) {
         errorMessage = 'Erro interno do servidor. Tente novamente.';
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.message) {
-        errorMessage = `Erro: ${err.message}`;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = `Erro: ${error.message}`;
       }
       
       setError(errorMessage);
@@ -46,15 +58,16 @@ export const useAuth = () => {
       localStorage.setItem('accessToken', response.accessToken);
       localStorage.setItem('user', JSON.stringify(response.user));
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const error = err as ApiError;
       let errorMessage = 'Erro desconhecido ao criar conta. Tente novamente.';
       
-      if (err.response?.status === 409) {
-        errorMessage = err.response?.data?.message || 'Email já está em uso.';
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else if (err.message) {
-        errorMessage = `Erro: ${err.message}`;
+      if (error.response?.status === 409) {
+        errorMessage = error.response?.data?.message || 'Email já está em uso.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = `Erro: ${error.message}`;
       }
       
       setError(errorMessage);

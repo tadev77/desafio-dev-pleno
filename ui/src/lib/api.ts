@@ -121,7 +121,7 @@ export const transactionsApi = {
   },
 
   getBalance: async (startDate?: string, endDate?: string): Promise<Balance> => {
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (startDate) params.startDate = startDate;
     if (endDate) params.endDate = endDate;
     const response = await api.get('/transactions/balance', { params });
